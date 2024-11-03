@@ -19,13 +19,21 @@ export class UserRepository {
         });
     }
 
-    public async update(userId:number, username:String, email:String, age:number, role:Role):Promise<User|null> {
+    public async update(userId:number, username:String, email:String, age:number):Promise<User|null> {
         return prisma.user.update({
             where: {id: userId},
             data: {
                 username,
                 email,
                 age,
+            },
+        });
+    }
+
+    public async updateRole(userId:number, role:Role):Promise<User|null> {
+        return prisma.user.update({
+            where: {id: userId},
+            data: {
                 role
             },
         });
