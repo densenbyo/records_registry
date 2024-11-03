@@ -20,12 +20,20 @@ export class RecordsRepository {
         });
     }
 
-    public async update(recordId: number, title: string, content: string, state: State): Promise<Records | null> {
+    public async update(recordId: number, title: string, content: string): Promise<Records | null> {
         return prisma.records.update({
             where: { id: recordId },
             data: {
                 title,
                 content,
+            },
+        });
+    }
+
+    public async updateState(recordId: number, state: State): Promise<Records | null> {
+        return prisma.records.update({
+            where: { id: recordId },
+            data: {
                 state,
             },
         });
