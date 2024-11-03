@@ -1,15 +1,19 @@
-import {RecordsRepository} from "../repository/RecordsRepository";
-import {Records, State} from '@prisma/client';
+import { RecordsRepository } from "../repository/RecordsRepository";
+import { Records, State, User } from '@prisma/client';
+import { UserService } from "./UserService";
 
 export class RecordsService {
     private recordsRepository: RecordsRepository;
+    private userService: UserService;
 
     constructor() {
         this.recordsRepository = new RecordsRepository();
+        this.userService = new UserService();
     }
 
-    public async createRecord(title: string, content: string, userId: number): Promise<Records> {
-        return this.recordsRepository.create(title, content, userId);
+    public async createRecord(title: string, content: string, userId: number, fileUrl: string): Promise<Records> {
+        const user:User = await this.userService.getUserById(userId);
+        return await this.recordsRepository.create(title, content, userId, user.username, fileUrl);
     }
 
     public async getRecordsById(recordId: number): Promise<Records> {
@@ -48,8 +52,9 @@ export class RecordsService {
         return deletedUser;
     }
 
-    public async getRecordsByUser(userId: number):Promise<Records[]> {
-        return this.recordsRepository.findRecordsByUserId(userId);
+    public async getRecordsByUser(userId: number, page?: number, pageSize?: number,
+                                  title?: string, startDate?: Date, endDate?: Date):Promise<Records[]> {
+        return this.recordsRepository.findRecordsByUserId(userId, page, pageSize, {title, startDate, endDate});
     }
 }
 

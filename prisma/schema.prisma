@@ -41,9 +41,12 @@ model Records {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title String @db.VarChar(50)
-  content String
+  senderName String
+  content String?
+  fileUrl String?
   userId Int
   user User @relation(fields: [userId], references: [id])
 
-  @@index([userId])
+  @@index([userId], name: "idx_userId")
+  @@index([createdAt], name: "idx_createdAt")
 }

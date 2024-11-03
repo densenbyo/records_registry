@@ -10,10 +10,10 @@ export class RecordsController {
     }
 
     public async createRecord(req: Request, res: Response): Promise<void> {
-        const { title, content, userId } = req.body;
+        const { title, content, userId, fileUrl } = req.body;
         try {
-            const record: Records = await this.recordsService.createRecord(title, content, userId);
-            res.status(201).json(record);
+            const newRecord:Records = await this.recordsService.createRecord(title, content, userId, fileUrl);
+            res.status(201).json(newRecord);
         } catch (error) {
             console.error('Error during record creation.', error);
             res.status(500).json({ message: 'Server error' });
@@ -65,9 +65,11 @@ export class RecordsController {
     }
 
     public async findUserRecords(req: Request, res: Response): Promise<void> {
-        const { userId } = req.body;
+        const { userId, page, pageSize, title, startDate, endDate } = req.body;
         try {
-            const record:Records[] = await this.recordsService.getRecordsByUser(userId);
+            const record:Records[] = await this.recordsService.getRecordsByUser(userId, page, pageSize,
+                title, startDate, endDate);
+
             res.status(200).json(record);
         } catch (error) {
             console.error(`Error during get record by user's id: ${userId}.`, error);
