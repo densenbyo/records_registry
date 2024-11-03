@@ -30,3 +30,6 @@ logs
 
 # Prisma
 prisma/migrations/
+
+# build
+dist/
