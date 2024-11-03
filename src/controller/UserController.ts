@@ -21,7 +21,7 @@ export class UserController {
     }
 
     public async findUser(req: Request, res: Response): Promise<void> {
-        const {userId} = req.body;
+        const { userId } = req.body;
         try {
             const user:User = await this.userService.getUserById(userId);
             res.status(200).json(user);
@@ -32,7 +32,7 @@ export class UserController {
     }
 
     public async updateUser(req: Request, res: Response): Promise<void> {
-        const {userId, username, email, age} = req.body;
+        const { userId, username, email, age } = req.body;
         try {
             const user:User = await this.userService.updateUser(userId, username, email, age);
             res.status(200).json(user);
@@ -43,7 +43,7 @@ export class UserController {
     }
 
     public async updateUserRole(req: Request, res: Response): Promise<void> {
-        const {userId, role} = req.body;
+        const { userId, role } = req.body;
         try {
             const user:User = await this.userService.updateUserRole(userId, role);
             res.status(200).json(user);
@@ -54,7 +54,7 @@ export class UserController {
     }
 
     public async deleteUser(req: Request, res: Response): Promise<void> {
-        const {userId} = req.body;
+        const { userId } = req.body;
         try {
             const user:User = await this.userService.deleteUser(userId);
             res.status(200).json(user);
