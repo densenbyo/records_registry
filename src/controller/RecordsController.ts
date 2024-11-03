@@ -63,4 +63,15 @@ export class RecordsController {
             res.status(500).json({message: 'Server error'});
         }
     }
+
+    public async findUserRecords(req: Request, res: Response): Promise<void> {
+        const { userId } = req.body;
+        try {
+            const record:Records = await this.recordsService.getRecordsByUser(userId);
+            res.status(200).json(record);
+        } catch (error) {
+            console.error(`Error during get record by user's id: ${userId}.`, error);
+            res.status(500).json({message: 'Server error'});
+        }
+    }
 }
