@@ -3,7 +3,7 @@ import {PrismaClient, Role, User} from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class UserRepository {
-    public async create(username:String, email:String, age:number):Promise<User>   {
+    public async create(username:string, email:string, age:number):Promise<User>   {
         return prisma.user.create({
             data: {
                 username,
@@ -19,7 +19,7 @@ export class UserRepository {
         });
     }
 
-    public async update(userId:number, username:String, email:String, age:number):Promise<User|null> {
+    public async update(userId:number, username:string, email:string, age:number):Promise<User|null> {
         return prisma.user.update({
             where: {id: userId},
             data: {

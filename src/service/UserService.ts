@@ -13,7 +13,7 @@ export class UserService {
     }
 
     public async getUserById(userId: number): Promise<User> {
-        const user = this.userRepository.findUserByIdLazy(userId);
+        const user = await this.userRepository.findUserByIdLazy(userId);
 
         if (user == null) {
             throw new Error(`User with id: ${userId} is not found.`);
@@ -22,7 +22,7 @@ export class UserService {
     }
 
     public async updateUser(userId: number, username: string, email: string, age: number): Promise<User> {
-        const updateUser = this.userRepository.update(userId, username, email, age);
+        const updateUser = await this.userRepository.update(userId, username, email, age);
 
         if (updateUser == null) {
             throw new Error(`User with id: ${userId} is not found. Rolling back update action.`)
@@ -31,7 +31,7 @@ export class UserService {
     }
 
     public async updateUserRole(userId: number, role: Role): Promise<User> {
-        const updateUser = this.userRepository.updateRole(userId, role);
+        const updateUser = await this.userRepository.updateRole(userId, role);
 
         if (updateUser == null) {
             throw new Error(`User with id: ${userId} is not found. Rolling back update role action.`)
@@ -40,7 +40,7 @@ export class UserService {
     }
 
     public async deleteUser(userId: number): Promise<User> {
-        const deletedUser = this.userRepository.delete(userId);
+        const deletedUser = await this.userRepository.delete(userId);
 
         if (deletedUser == null) {
             throw new Error(`User with id: ${userId} is not found. Rolling back delete action.`)
