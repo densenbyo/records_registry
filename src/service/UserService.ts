@@ -1,5 +1,7 @@
 import { UserRepository } from '../repository/UserRepository';
 import { Role, User } from '@prisma/client';
+import {EmailValidator} from "../util/validators/EmailValidator";
+import {UsernameValidator} from "../util/validators/UsernameValidator";
 
 export class UserService {
     private userRepository: UserRepository;
@@ -9,6 +11,13 @@ export class UserService {
     }
 
     public async createUser(username: string, email: string, age: number): Promise<User> {
+        if (!EmailValidator.validate(email)) {
+            throw new Error("Email is not valid.");
+        }
+        if (!UsernameValidator.validate(username)) {
+            throw new Error("Username is not valid");
+        }
+
         return this.userRepository.create(username, email, age);
     }
 
