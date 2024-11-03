@@ -1,5 +1,5 @@
-import {UserRepository} from '../repository/UserRepository';
-import {Role, User} from '@prisma/client';
+import { UserRepository } from '../repository/UserRepository';
+import { Role, User } from '@prisma/client';
 
 export class UserService {
     private userRepository: UserRepository;
@@ -48,5 +48,3 @@ export class UserService {
         return deletedUser;
     }
 }
-
-export default new UserService();

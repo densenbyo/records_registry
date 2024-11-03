@@ -1,5 +1,5 @@
-import {RecordsRepository} from "../repository/RecordsRepository";
-import {Records, State} from '@prisma/client';
+import { RecordsRepository } from "../repository/RecordsRepository";
+import { Records, State } from '@prisma/client';
 
 export class RecordsService {
     private recordsRepository: RecordsRepository;
