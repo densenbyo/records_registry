@@ -8,5 +8,6 @@ RUN npm run build
 FROM node:16 AS production
 WORKDIR /app
 COPY --from=build /app .
+RUN mkdir -p uploads
 EXPOSE 3000
 CMD ["npm", "start"]
