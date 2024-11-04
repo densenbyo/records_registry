@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { RecordsService } from '../service/RecordsService';
 import {PrismaClient, Records} from '@prisma/client';
 import { FileService } from "../service/FileService";
-import { StringToNumberValidator } from "../util/validators/StringToNumberValidator";
+import {StringToNumberValidator} from "../util/validators/StringToNumberValidator";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ export class RecordsController {
         const { title, content, userId } = req.body;
         const file = req.file;
 
-        if (StringToNumberValidator.validate(userId)) {
+        if (!StringToNumberValidator.validate(userId)) {
             console.error('userId is not valid. It looks like \'abc\', but should look like \'123\'.');
             res.status(500).json({ message: 'Server error' });
         }
@@ -28,7 +28,7 @@ export class RecordsController {
 
         try {
 
-            const result = await prisma.$transaction(async (prisma) => {
+            const result = await prisma.$transaction(async () => {
                 const newRecord: Records = await this.recordsService.createRecord(title, content, parsedUserId);
 
                 if (file) {
@@ -52,7 +52,7 @@ export class RecordsController {
     public async findRecords(req: Request, res: Response): Promise<void> {
         const { recordIs } = req.body;
         try {
-            if (StringToNumberValidator.validate(recordIs)) {
+            if (!StringToNumberValidator.validate(recordIs)) {
                 console.error('recordIs is not valid. It looks like \'abc\', but should look like \'123\'.');
                 res.status(500).json({ message: 'Server error' });
             }
@@ -68,7 +68,7 @@ export class RecordsController {
     public async updateRecord(req: Request, res: Response): Promise<void> {
         const { recordId, title, content } = req.body;
         try {
-            if (StringToNumberValidator.validate(recordId)) {
+            if (!StringToNumberValidator.validate(recordId)) {
                 console.error('recordId is not valid. It looks like \'abc\', but should look like \'123\'.');
                 res.status(500).json({ message: 'Server error' });
             }
@@ -84,7 +84,7 @@ export class RecordsController {
     public async updateRecordState(req: Request, res: Response): Promise<void> {
         const { recordId, state } = req.body;
         try {
-            if (StringToNumberValidator.validate(recordId)) {
+            if (!StringToNumberValidator.validate(recordId)) {
                 console.error('recordId is not valid. It looks like \'abc\', but should look like \'123\'.');
                 res.status(500).json({ message: 'Server error' });
             }
@@ -100,7 +100,7 @@ export class RecordsController {
     public async deleteRecord(req: Request, res: Response): Promise<void> {
         const { recordId } = req.body;
         try {
-            if (StringToNumberValidator.validate(recordId)) {
+            if (!StringToNumberValidator.validate(recordId)) {
                 console.error('recordId is not valid. It looks like \'abc\', but should look like \'123\'.');
                 res.status(500).json({ message: 'Server error' });
             }
@@ -116,9 +116,9 @@ export class RecordsController {
     public async findUserRecords(req: Request, res: Response): Promise<void> {
         const { userId, page, pageSize, title, startDate, endDate } = req.body;
         try {
-            if (StringToNumberValidator.validate(userId) &&
-                StringToNumberValidator.validate(page) &&
-                StringToNumberValidator.validate(pageSize)) {
+            if (!StringToNumberValidator.validate(userId) &&
+                !StringToNumberValidator.validate(page) &&
+                !StringToNumberValidator.validate(pageSize)) {
                 console.error('userId or page or pageSize is not valid. It looks like \'abc\', but should look like \'123\'.');
                 res.status(500).json({ message: 'Server error' });
             }
