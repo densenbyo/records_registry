@@ -1,18 +1,33 @@
 import { Request, Response } from 'express';
 import { RecordsService } from '../service/RecordsService';
 import { Records } from '@prisma/client';
+import { FileService } from "../service/FileService";
 
 export class RecordsController {
     private recordsService: RecordsService;
+    private fileService: FileService;
 
     constructor() {
         this.recordsService = new RecordsService();
+        this.fileService = new FileService();
     }
 
     public async createRecord(req: Request, res: Response): Promise<void> {
-        const { title, content, userId, fileUrl } = req.body;
+        const { title, content, userId } = req.body;
+        const file = req.file;
+
         try {
-            const newRecord:Records = await this.recordsService.createRecord(title, content, userId, fileUrl);
+            const newRecord:Records = await this.recordsService.createRecord(title, content, userId);
+
+            if (file) {
+                // Create file metadata using the FileService
+                await this.fileService.createFile({
+                    fileUrl: file.path, // Save the path to the file
+                    userId: userId,
+                    recordId: newRecord.id, // Associate with the newly created record
+                });
+            }
+
             res.status(201).json(newRecord);
         } catch (error) {
             console.error('Error during record creation.', error);

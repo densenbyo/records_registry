@@ -11,9 +11,9 @@ export class RecordsService {
         this.userService = new UserService();
     }
 
-    public async createRecord(title: string, content: string, userId: number, fileUrl: string): Promise<Records> {
+    public async createRecord(title: string, content: string, userId: number): Promise<Records> {
         const user:User = await this.userService.getUserById(userId);
-        return await this.recordsRepository.create(title, content, userId, user.username, fileUrl);
+        return await this.recordsRepository.create(title, content, userId, user.username);
     }
 
     public async getRecordsById(recordId: number): Promise<Records> {
@@ -35,12 +35,11 @@ export class RecordsService {
     }
 
     public async updateRecordState(recordId: number, state: State): Promise<Records> {
-        const updateRecord = await this.recordsRepository.updateState(recordId, state);
-
-        if (updateRecord == null) {
-            throw new Error(`Record with id: ${recordId} is not found. Rolling back update role action.`)
+        try {
+            return await this.recordsRepository.updateState(recordId, state);
+        } catch (error) {
+            throw new Error(`Record with id: ${recordId} is not found. Rolling back update state action.`)
         }
-        return updateRecord;
     }
 
     public async deleteRecord(recordId: number): Promise<Records> {
