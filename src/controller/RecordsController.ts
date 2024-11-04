@@ -29,17 +29,7 @@ export class RecordsController {
         try {
 
             const result = await prisma.$transaction(async () => {
-                const newRecord: Records = await this.recordsService.createRecord(title, content, parsedUserId);
-
-                if (file) {
-                    await this.fileService.createFile({
-                        fileUrl: file.path,
-                        userId: parsedUserId,
-                        recordId: newRecord.id,
-                    });
-                }
-
-                return newRecord;
+                return await this.recordsService.createRecord(title, content, parsedUserId, file);
             });
 
             res.status(201).json(result);

@@ -1,19 +1,32 @@
 import { RecordsRepository } from "../repository/RecordsRepository";
 import { Records, State, User } from '@prisma/client';
 import { UserService } from "./UserService";
+import { FileService } from "./FileService";
 
 export class RecordsService {
     private recordsRepository: RecordsRepository;
     private userService: UserService;
+    private fileService: FileService;
 
     constructor() {
         this.recordsRepository = new RecordsRepository();
         this.userService = new UserService();
+        this.fileService = new FileService();
     }
 
-    public async createRecord(title: string, content: string, userId: number): Promise<Records> {
+    public async createRecord(title: string, content: string, userId: number, file: Express.Multer.File | undefined): Promise<Records> {
         const user:User = await this.userService.getUserById(userId);
-        return await this.recordsRepository.create(title, content, userId, user.username);
+        const record: Records = await this.recordsRepository.create(title, content, userId, user.username);
+
+        if (file) {
+            await this.fileService.createFile({
+                fileUrl: file.path,
+                userId: userId,
+                recordId: record.id,
+            });
+        }
+
+        return record;
     }
 
     public async getRecordsById(recordId: number): Promise<Records> {
