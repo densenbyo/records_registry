@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import { RecordsService } from '../service/RecordsService';
-import { Records } from '@prisma/client';
+import {PrismaClient, Records} from '@prisma/client';
 import { FileService } from "../service/FileService";
+import { StringToNumberValidator } from "../util/validators/StringToNumberValidator";
+
+const prisma = new PrismaClient();
 
 export class RecordsController {
     private recordsService: RecordsService;
@@ -16,19 +19,30 @@ export class RecordsController {
         const { title, content, userId } = req.body;
         const file = req.file;
 
+        if (StringToNumberValidator.validate(userId)) {
+            console.error('userId is not valid. It looks like \'abc\', but should look like \'123\'.');
+            res.status(500).json({ message: 'Server error' });
+        }
+
+        const parsedUserId = parseInt(userId);
+
         try {
-            const newRecord:Records = await this.recordsService.createRecord(title, content, userId);
 
-            if (file) {
-                // Create file metadata using the FileService
-                await this.fileService.createFile({
-                    fileUrl: file.path, // Save the path to the file
-                    userId: userId,
-                    recordId: newRecord.id, // Associate with the newly created record
-                });
-            }
+            const result = await prisma.$transaction(async (prisma) => {
+                const newRecord: Records = await this.recordsService.createRecord(title, content, parsedUserId);
 
-            res.status(201).json(newRecord);
+                if (file) {
+                    await this.fileService.createFile({
+                        fileUrl: file.path,
+                        userId: parsedUserId,
+                        recordId: newRecord.id,
+                    });
+                }
+
+                return newRecord;
+            });
+
+            res.status(201).json(result);
         } catch (error) {
             console.error('Error during record creation.', error);
             res.status(500).json({ message: 'Server error' });
@@ -38,7 +52,12 @@ export class RecordsController {
     public async findRecords(req: Request, res: Response): Promise<void> {
         const { recordIs } = req.body;
         try {
-            const record:Records = await this.recordsService.getRecordsById(recordIs);
+            if (StringToNumberValidator.validate(recordIs)) {
+                console.error('recordIs is not valid. It looks like \'abc\', but should look like \'123\'.');
+                res.status(500).json({ message: 'Server error' });
+            }
+
+            const record:Records = await this.recordsService.getRecordsById(parseInt(recordIs));
             res.status(200).json(record);
         } catch (error) {
             console.error(`Error during get record by id: ${recordIs}.`, error);
@@ -49,7 +68,12 @@ export class RecordsController {
     public async updateRecord(req: Request, res: Response): Promise<void> {
         const { recordId, title, content } = req.body;
         try {
-            const record:Records = await this.recordsService.updateRecord(recordId, title, content);
+            if (StringToNumberValidator.validate(recordId)) {
+                console.error('recordId is not valid. It looks like \'abc\', but should look like \'123\'.');
+                res.status(500).json({ message: 'Server error' });
+            }
+
+            const record:Records = await this.recordsService.updateRecord(parseInt(recordId), title, content);
             res.status(200).json(record);
         } catch (error) {
             console.error(`Error during update record by id: ${recordId}.`, error);
@@ -60,7 +84,12 @@ export class RecordsController {
     public async updateRecordState(req: Request, res: Response): Promise<void> {
         const { recordId, state } = req.body;
         try {
-            const record:Records = await this.recordsService.updateRecordState(recordId, state);
+            if (StringToNumberValidator.validate(recordId)) {
+                console.error('recordId is not valid. It looks like \'abc\', but should look like \'123\'.');
+                res.status(500).json({ message: 'Server error' });
+            }
+
+            const record:Records = await this.recordsService.updateRecordState(parseInt(recordId), state);
             res.status(200).json(record);
         } catch (error) {
             console.error(`Error during update state of record by id: ${recordId}.`, error);
@@ -71,7 +100,12 @@ export class RecordsController {
     public async deleteRecord(req: Request, res: Response): Promise<void> {
         const { recordId } = req.body;
         try {
-            const record:Records = await this.recordsService.deleteRecord(recordId);
+            if (StringToNumberValidator.validate(recordId)) {
+                console.error('recordId is not valid. It looks like \'abc\', but should look like \'123\'.');
+                res.status(500).json({ message: 'Server error' });
+            }
+
+            const record:Records = await this.recordsService.deleteRecord(parseInt(recordId));
             res.status(200).json(record);
         } catch (error) {
             console.error(`Error during deletion user by id: ${recordId}.`, error);
@@ -82,8 +116,15 @@ export class RecordsController {
     public async findUserRecords(req: Request, res: Response): Promise<void> {
         const { userId, page, pageSize, title, startDate, endDate } = req.body;
         try {
-            const record:Records[] = await this.recordsService.getRecordsByUser(userId, page, pageSize,
-                title, startDate, endDate);
+            if (StringToNumberValidator.validate(userId) &&
+                StringToNumberValidator.validate(page) &&
+                StringToNumberValidator.validate(pageSize)) {
+                console.error('userId or page or pageSize is not valid. It looks like \'abc\', but should look like \'123\'.');
+                res.status(500).json({ message: 'Server error' });
+            }
+
+            const record:Records[] = await this.recordsService.getRecordsByUser(parseInt(userId), parseInt(page),
+                parseInt(pageSize), title, startDate, endDate);
 
             res.status(200).json(record);
         } catch (error) {

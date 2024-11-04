@@ -56,7 +56,6 @@ model File {
   recordId Int
   record Records @relation(fields: [recordId], references: [id], onDelete: Cascade)
 
-  @@index([userId], name: "idx_userId_file")
-  @@index([recordId], name: "idx_recordId_file")
+  @@index([fileUrl], name: "idx_fileUrl_file")
   @@index([uploadedAt], name: "idx_uploadedAt")
 }
