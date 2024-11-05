@@ -35,6 +35,13 @@ export class RecordsController {
             res.status(201).json(result);
         } catch (error) {
             console.error('Error during record creation.', error);
+            if (file) {
+                try {
+                    await this.fileService.deleteFileFromLocal(file.path);
+                } catch (error) {
+                    console.error('Error deleting file from local storage:', error);
+                }
+            }
             res.status(500).json({ message: 'Server error' });
         }
     }

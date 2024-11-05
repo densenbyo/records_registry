@@ -1,5 +1,7 @@
 import { FileRepository } from "../repository/FileRepository";
 import { File } from '@prisma/client';
+import path from "path";
+import * as fs from "fs";
 
 export class FileService {
     private fileRepository: FileRepository;
@@ -17,7 +19,19 @@ export class FileService {
         }
     }
 
-    public async deleteFile(fileId: number): Promise<void> {
+    public async deleteFileFromLocal(fileUrl: string): Promise<void> {
+        try {
+            const fileBase: string = path.basename(fileUrl);
+            const filePath: string = path.join(__dirname, '../../uploads', fileBase);
+
+            await fs.promises.unlink(filePath);
+            console.log(`File with name: ${fileBase} has been deleted.`);
+        } catch (error) {
+            console.error(`Failed to delete file: ${fileUrl}`, error);
+        }
+    }
+
+    public async deleteFileFromDb(fileId: number): Promise<void> {
         await this.fileRepository.deleteFileMetadata(fileId);
     }
 
