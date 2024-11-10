@@ -8,4 +8,13 @@ export class StringToNumberValidator {
 
         return this.numberRegex.test(stringToNumber);
     }
+
+    public static parseInteger(stringToNumber: string, message: string): number {
+        if (this.validate(stringToNumber) && stringToNumber != null) {
+            return parseInt(stringToNumber);
+        } else {
+            console.error(`${message} is not valid. It looks like 'abc', but should look like '123'.`);
+            throw new Error(`${message} is not valid. It looks like 'abc', but should look like '123'.`);
+        }
+    }
 }

@@ -19,15 +19,17 @@ export class FileService {
         }
     }
 
-    public async deleteFileFromLocal(fileUrl: string): Promise<void> {
-        try {
-            const fileBase: string = path.basename(fileUrl);
-            const filePath: string = path.join(__dirname, '../../uploads', fileBase);
+    public async deleteFileFromLocal(file: Express.Multer.File | undefined): Promise<void> {
+        if (file) {
+            try {
+                const fileBase: string = path.basename(file.path);
+                const filePath: string = path.join(__dirname, '../../uploads', fileBase);
 
-            await fs.promises.unlink(filePath);
-            console.log(`File with name: ${fileBase} has been deleted.`);
-        } catch (error) {
-            console.error(`Failed to delete file: ${fileUrl}`, error);
+                await fs.promises.unlink(filePath);
+                console.log(`File with name: ${fileBase} has been deleted.`);
+            } catch (error) {
+                console.error(`Failed to delete file: ${file.path}`, error);
+            }
         }
     }
 
